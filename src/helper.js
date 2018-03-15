@@ -3,10 +3,16 @@ import {sync as which} from 'which';
 import {spawn} from 'child_process';
 import {property as configProperty} from './config';
 
+const cache = [];
+
 export {transformSource};
 
 function transformSource(filePath, callback) {
     let executable = null;
+
+    if (cache.includes(filePath)) {
+        return fs.readFile(filePath, callback);
+    }
 
     try {
         executable = which('compass');
@@ -34,7 +40,11 @@ function transformSource(filePath, callback) {
 
     query.push('--css-dir', configProperty('cssDir'));
 
-    query.push('--sass-dir', configProperty('sassDir'));
+    if (filePath.startsWith(configProperty('sassDir'))) {
+        query.push('--sass-dir', configProperty('sassDir'));
+    } else {
+        query.push('--sass-dir', path.parse(filePath).dir);
+    }
 
     query.push('--fonts-dir', configProperty('fontsDir'));
 
@@ -112,6 +122,8 @@ function transformSource(filePath, callback) {
         if (code) {
             return callback(arguments);
         }
+
+        cache.push(filePath);
 
         fs.readFile(filePath, callback);
     });

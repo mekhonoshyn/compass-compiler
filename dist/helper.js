@@ -17,6 +17,8 @@ var _config = require('./config');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var cache = [];
+
 exports.transformSource = transformSource;
 
 
@@ -24,6 +26,10 @@ function transformSource(filePath, callback) {
     var _arguments = arguments;
 
     var executable = null;
+
+    if (cache.includes(filePath)) {
+        return _fs2.default.readFile(filePath, callback);
+    }
 
     try {
         executable = (0, _which.sync)('compass');
@@ -51,7 +57,11 @@ function transformSource(filePath, callback) {
 
     query.push('--css-dir', (0, _config.property)('cssDir'));
 
-    query.push('--sass-dir', (0, _config.property)('sassDir'));
+    if (filePath.startsWith((0, _config.property)('sassDir'))) {
+        query.push('--sass-dir', (0, _config.property)('sassDir'));
+    } else {
+        query.push('--sass-dir', path.parse(filePath).dir);
+    }
 
     query.push('--fonts-dir', (0, _config.property)('fontsDir'));
 
@@ -129,6 +139,8 @@ function transformSource(filePath, callback) {
         if (code) {
             return callback(_arguments);
         }
+
+        cache.push(filePath);
 
         _fs2.default.readFile(filePath, callback);
     });
