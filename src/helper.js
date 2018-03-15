@@ -93,13 +93,13 @@ function transformSource(filePath, callback) {
 
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', (data) => {
-        logger.log(`intermediate compilation output - "${data}"`);
+        logger.log(`intermediate compilation output - "${data.trim()}"`);
     });
 
     child.stderr.setEncoding('utf8');
     child.stderr.on('data', (data) => {
         if (!data.match(/^\u001b\[\d+m$/)) {
-            logger.error(`compilation error - "${data}"`);
+            logger.error(`compilation error - "${data.trim()}"`);
         }
     });
 

@@ -23,13 +23,13 @@ function compassCompilerLoader() {
     var resourcePath = this.resourcePath;
 
 
-    _logger2.default.info('start processing "' + resourcePath);
+    _logger2.default.info('start processing "' + resourcePath + '"');
 
     var callback = this.async();
 
     (0, _helper.transformSource)(resourcePath, function (error, result) {
         if (error) {
-            _logger2.default.error('processing failed for "' + resourcePath + '" due to error "' + error + '"');
+            _logger2.default.error('processing failed for "' + resourcePath + '" due to error "' + error.trim() + '"');
 
             return callback(error);
         }

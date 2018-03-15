@@ -52,5 +52,9 @@ function initialize({
 }
 
 function finalize() {
-    del.sync(path.join(property('project'), property('cssDir')));
+    del.sync([
+        path.join(property('project'), property('cssDir')),
+        path.join(property('project'), '.sass-cache'),
+        path.join(property('project'), 'manifest.json')
+    ]);
 }

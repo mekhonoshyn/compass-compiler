@@ -117,13 +117,13 @@ function transformSource(filePath, callback) {
 
     child.stdout.setEncoding('utf8');
     child.stdout.on('data', function (data) {
-        _logger2.default.log('intermediate compilation output - "' + data + '"');
+        _logger2.default.log('intermediate compilation output - "' + data.trim() + '"');
     });
 
     child.stderr.setEncoding('utf8');
     child.stderr.on('data', function (data) {
         if (!data.match(/^\u001b\[\d+m$/)) {
-            _logger2.default.error('compilation error - "' + data + '"');
+            _logger2.default.error('compilation error - "' + data.trim() + '"');
         }
     });
 

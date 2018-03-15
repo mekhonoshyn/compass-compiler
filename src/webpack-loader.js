@@ -11,13 +11,13 @@ export {
 function compassCompilerLoader() {
     const {resourcePath} = this;
 
-    logger.info(`start processing "${resourcePath}`);
+    logger.info(`start processing "${resourcePath}"`);
 
     const callback = this.async();
 
     transformSource(resourcePath, (error, result) => {
         if (error) {
-            logger.error(`processing failed for "${resourcePath}" due to error "${error}"`);
+            logger.error(`processing failed for "${resourcePath}" due to error "${error.trim()}"`);
 
             return callback(error);
         }
