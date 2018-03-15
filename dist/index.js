@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+exports.finalize = exports.initialize = exports.webpackLoaderPath = undefined;
 
 var _path = require('path');
 
@@ -14,12 +15,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 var webpackLoaderPath = _path2.default.join(__dirname, 'webpack-loader');
 
-exports.default = {
-    webpackLoaderPath: webpackLoaderPath,
-
-    initialize: initialize,
-    finalize: finalize
-};
+exports.webpackLoaderPath = webpackLoaderPath;
+exports.initialize = initialize;
+exports.finalize = finalize;
 
 
 function initialize(options) {

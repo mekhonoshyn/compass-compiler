@@ -6,7 +6,7 @@ import {
 
 const webpackLoaderPath = path.join(__dirname, 'webpack-loader');
 
-export default {
+export {
     webpackLoaderPath,
 
     initialize,
