@@ -32,7 +32,6 @@ function transformSource(filePath, callback) {
     }
 
     var query = [];
-    var child = (0, _child_process.spawn)(executable, query, { cwd: (0, _config.property)('project') });
 
     query.push((0, _config.property)('task'));
     query.push((0, _config.property)('project'));
@@ -109,6 +108,8 @@ function transformSource(filePath, callback) {
     if ((0, _config.property)('verbose')) {
         console.info('Running command:', executable, query.join(' '));
     }
+
+    var child = (0, _child_process.spawn)(executable, query, { cwd: (0, _config.property)('project') });
 
     if ((0, _config.property)('verbose')) {
         child.stdout.setEncoding('utf8');
