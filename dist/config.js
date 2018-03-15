@@ -56,6 +56,7 @@ function initialize(_ref) {
         sourceMap: false,
         boring: false,
         force: true,
+        trace: isDevelopment,
         task: 'compile',
         project: _path2.default.join(process.cwd(), distRelPath)
     };

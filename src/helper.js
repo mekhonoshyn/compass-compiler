@@ -85,6 +85,10 @@ function transformSource(filePath, callback) {
         query.push('--force');
     }
 
+    if (configProperty('trace')) {
+        query.push('--trace');
+    }
+
     if (configProperty('verbose')) {
         console.info('Running command:', executable, query.join(' '));
     }

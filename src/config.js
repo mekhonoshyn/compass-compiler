@@ -42,6 +42,7 @@ function initialize({
         sourceMap: false,
         boring: false,
         force: true,
+        trace: isDevelopment,
         task: 'compile',
         project: path.join(process.cwd(), distRelPath)
     };
