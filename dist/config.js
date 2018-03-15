@@ -32,7 +32,6 @@ function initialize(_ref) {
     var fntRelPath = _ref.fntRelPath,
         imgRelPath = _ref.imgRelPath,
         distRelPath = _ref.distRelPath,
-        sassRelPath = _ref.sassRelPath,
         environment = _ref.environment,
         isDevelopment = _ref.isDevelopment;
 
@@ -42,7 +41,6 @@ function initialize(_ref) {
         noLineComments: !isDevelopment,
         relativeAssets: true,
         cssDir: '.css-temp',
-        sassDir: _path2.default.join(process.cwd(), sassRelPath),
         fontsDir: fntRelPath,
         imagesDir: imgRelPath,
         javascriptsDir: false,
@@ -58,7 +56,8 @@ function initialize(_ref) {
         force: true,
         trace: isDevelopment,
         task: 'compile',
-        project: _path2.default.join(process.cwd(), distRelPath)
+        project: _path2.default.join(process.cwd(), distRelPath),
+        moduleName: 'webpack-compass-compiler'
     };
 
     Object.entries(options).forEach(function (_ref2) {
@@ -71,5 +70,5 @@ function initialize(_ref) {
 }
 
 function finalize() {
-    _del2.default.sync(property('cssDir'));
+    _del2.default.sync(_path2.default.join(property('project'), property('cssDir')));
 }

@@ -1,19 +1,14 @@
 import fs from 'fs';
 import path from 'path';
+import logger from './logger';
 import {sync as which} from 'which';
 import {spawn} from 'child_process';
 import {property as configProperty} from './config';
-
-const cache = new Map();
 
 export {transformSource};
 
 function transformSource(filePath, callback) {
     let executable = null;
-
-    if (cache.has(filePath)) {
-        return fs.readFile(cache.get(filePath), callback);
-    }
 
     try {
         executable = which('compass');
@@ -22,9 +17,7 @@ function transformSource(filePath, callback) {
     }
 
     const query = [];
-    const sassDir = filePath.startsWith(configProperty('sassDir'))
-        ? configProperty('sassDir')
-        : path.parse(filePath).dir;
+    const {dir: fileDir, name: fileName} = path.parse(filePath);
 
     query.push(configProperty('task'));
     query.push(configProperty('project'));
@@ -44,7 +37,7 @@ function transformSource(filePath, callback) {
 
     query.push('--css-dir', configProperty('cssDir'));
 
-    query.push('--sass-dir', sassDir);
+    query.push('--sass-dir', fileDir);
 
     query.push('--fonts-dir', configProperty('fontsDir'));
 
@@ -70,10 +63,6 @@ function transformSource(filePath, callback) {
         query.push('--require', requirePath);
     });
 
-    if (configProperty('verbose')) {
-        query.push('--debug-info');
-    }
-
     if (configProperty('loadAll')) {
         query.push('--load-all', configProperty('loadAll'));
     }
@@ -98,36 +87,33 @@ function transformSource(filePath, callback) {
         query.push('--trace');
     }
 
-    if (configProperty('verbose')) {
-        console.info('Running command:', executable, query.join(' '));
-    }
-
     const child = spawn(executable, query, {cwd: configProperty('project')});
 
-    if (configProperty('verbose')) {
-        child.stdout.setEncoding('utf8');
-        child.stdout.on('data', (data) => {
-            console.log(data);
-        });
+    logger.info(`running child process "${executable} ${query.join(' ')}"`);
 
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', (data) => {
-            if (!data.match(/^\u001b\[\d+m$/)) {
-                console.error(data);
-            }
-        });
-    }
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', (data) => {
+        logger.log(`intermediate compilation output - "${data}"`);
+    });
+
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', (data) => {
+        if (!data.match(/^\u001b\[\d+m$/)) {
+            logger.error(`compilation error - "${data}"`);
+        }
+    });
 
     child.on('close', (code) => {
         if (code) {
-            return callback(arguments);
+            logger.error(`compilation of "${filePath}" failed. exit code - ${code}`);
+
+            return callback(code);
         }
 
-        const {dir, name} = filePath;
-        const relativeDir = path.relative(sassDir, dir);
+        const compiledFilePath = path.join(configProperty('project'), configProperty('cssDir'), `${fileName}.css`);
 
-        cache.set(filePath, path.join(configProperty('project'), configProperty('cssDir'), relativeDir, `${name}.css`));
+        logger.info(`compilation of "${filePath}" succeeded. result saved to "${compiledFilePath}"`);
 
-        fs.readFile(cache.get(filePath), callback);
+        fs.readFile(compiledFilePath, callback);
     });
 }

@@ -13,6 +13,10 @@ var _path = require('path');
 
 var _path2 = _interopRequireDefault(_path);
 
+var _logger = require('./logger');
+
+var _logger2 = _interopRequireDefault(_logger);
+
 var _which = require('which');
 
 var _child_process = require('child_process');
@@ -21,19 +25,11 @@ var _config = require('./config');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cache = new Map();
-
 exports.transformSource = transformSource;
 
 
 function transformSource(filePath, callback) {
-    var _arguments = arguments;
-
     var executable = null;
-
-    if (cache.has(filePath)) {
-        return _fs2.default.readFile(cache.get(filePath), callback);
-    }
 
     try {
         executable = (0, _which.sync)('compass');
@@ -42,7 +38,10 @@ function transformSource(filePath, callback) {
     }
 
     var query = [];
-    var sassDir = filePath.startsWith((0, _config.property)('sassDir')) ? (0, _config.property)('sassDir') : _path2.default.parse(filePath).dir;
+
+    var _path$parse = _path2.default.parse(filePath),
+        fileDir = _path$parse.dir,
+        fileName = _path$parse.name;
 
     query.push((0, _config.property)('task'));
     query.push((0, _config.property)('project'));
@@ -62,7 +61,7 @@ function transformSource(filePath, callback) {
 
     query.push('--css-dir', (0, _config.property)('cssDir'));
 
-    query.push('--sass-dir', sassDir);
+    query.push('--sass-dir', fileDir);
 
     query.push('--fonts-dir', (0, _config.property)('fontsDir'));
 
@@ -88,10 +87,6 @@ function transformSource(filePath, callback) {
         query.push('--require', requirePath);
     });
 
-    if ((0, _config.property)('verbose')) {
-        query.push('--debug-info');
-    }
-
     if ((0, _config.property)('loadAll')) {
         query.push('--load-all', (0, _config.property)('loadAll'));
     }
@@ -116,38 +111,33 @@ function transformSource(filePath, callback) {
         query.push('--trace');
     }
 
-    if ((0, _config.property)('verbose')) {
-        console.info('Running command:', executable, query.join(' '));
-    }
-
     var child = (0, _child_process.spawn)(executable, query, { cwd: (0, _config.property)('project') });
 
-    if ((0, _config.property)('verbose')) {
-        child.stdout.setEncoding('utf8');
-        child.stdout.on('data', function (data) {
-            console.log(data);
-        });
+    _logger2.default.info('running child process "' + executable + ' ' + query.join(' ') + '"');
 
-        child.stderr.setEncoding('utf8');
-        child.stderr.on('data', function (data) {
-            if (!data.match(/^\u001b\[\d+m$/)) {
-                console.error(data);
-            }
-        });
-    }
+    child.stdout.setEncoding('utf8');
+    child.stdout.on('data', function (data) {
+        _logger2.default.log('intermediate compilation output - "' + data + '"');
+    });
+
+    child.stderr.setEncoding('utf8');
+    child.stderr.on('data', function (data) {
+        if (!data.match(/^\u001b\[\d+m$/)) {
+            _logger2.default.error('compilation error - "' + data + '"');
+        }
+    });
 
     child.on('close', function (code) {
         if (code) {
-            return callback(_arguments);
+            _logger2.default.error('compilation of "' + filePath + '" failed. exit code - ' + code);
+
+            return callback(code);
         }
 
-        var dir = filePath.dir,
-            name = filePath.name;
+        var compiledFilePath = _path2.default.join((0, _config.property)('project'), (0, _config.property)('cssDir'), fileName + '.css');
 
-        var relativeDir = _path2.default.relative(sassDir, dir);
+        _logger2.default.info('compilation of "' + filePath + '" succeeded. result saved to "' + compiledFilePath + '"');
 
-        cache.set(filePath, _path2.default.join((0, _config.property)('project'), (0, _config.property)('cssDir'), relativeDir, name + '.css'));
-
-        _fs2.default.readFile(cache.get(filePath), callback);
+        _fs2.default.readFile(compiledFilePath, callback);
     });
 }
