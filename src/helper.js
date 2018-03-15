@@ -1,17 +1,18 @@
 import fs from 'fs';
+import path from 'path';
 import {sync as which} from 'which';
 import {spawn} from 'child_process';
 import {property as configProperty} from './config';
 
-const cache = [];
+const cache = new Map();
 
 export {transformSource};
 
 function transformSource(filePath, callback) {
     let executable = null;
 
-    if (cache.includes(filePath)) {
-        return fs.readFile(filePath, callback);
+    if (cache.has(filePath)) {
+        return fs.readFile(cache.get(filePath), callback);
     }
 
     try {
@@ -21,6 +22,9 @@ function transformSource(filePath, callback) {
     }
 
     const query = [];
+    const sassDir = filePath.startsWith(configProperty('sassDir'))
+        ? configProperty('sassDir')
+        : path.parse(filePath).dir;
 
     query.push(configProperty('task'));
     query.push(configProperty('project'));
@@ -40,11 +44,7 @@ function transformSource(filePath, callback) {
 
     query.push('--css-dir', configProperty('cssDir'));
 
-    if (filePath.startsWith(configProperty('sassDir'))) {
-        query.push('--sass-dir', configProperty('sassDir'));
-    } else {
-        query.push('--sass-dir', path.parse(filePath).dir);
-    }
+    query.push('--sass-dir', sassDir);
 
     query.push('--fonts-dir', configProperty('fontsDir'));
 
@@ -123,8 +123,8 @@ function transformSource(filePath, callback) {
             return callback(arguments);
         }
 
-        cache.push(filePath);
+        cache.set(filePath, path.join(configProperty('project'), configProperty('cssDir'), path.relative(sassDir, filePath)));
 
-        fs.readFile(filePath, callback);
+        fs.readFile(cache.get(filePath), callback);
     });
 }

@@ -9,6 +9,10 @@ var _fs = require('fs');
 
 var _fs2 = _interopRequireDefault(_fs);
 
+var _path = require('path');
+
+var _path2 = _interopRequireDefault(_path);
+
 var _which = require('which');
 
 var _child_process = require('child_process');
@@ -17,7 +21,7 @@ var _config = require('./config');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-var cache = [];
+var cache = new Map();
 
 exports.transformSource = transformSource;
 
@@ -27,8 +31,8 @@ function transformSource(filePath, callback) {
 
     var executable = null;
 
-    if (cache.includes(filePath)) {
-        return _fs2.default.readFile(filePath, callback);
+    if (cache.has(filePath)) {
+        return _fs2.default.readFile(cache.get(filePath), callback);
     }
 
     try {
@@ -38,6 +42,7 @@ function transformSource(filePath, callback) {
     }
 
     var query = [];
+    var sassDir = filePath.startsWith((0, _config.property)('sassDir')) ? (0, _config.property)('sassDir') : _path2.default.parse(filePath).dir;
 
     query.push((0, _config.property)('task'));
     query.push((0, _config.property)('project'));
@@ -57,11 +62,7 @@ function transformSource(filePath, callback) {
 
     query.push('--css-dir', (0, _config.property)('cssDir'));
 
-    if (filePath.startsWith((0, _config.property)('sassDir'))) {
-        query.push('--sass-dir', (0, _config.property)('sassDir'));
-    } else {
-        query.push('--sass-dir', path.parse(filePath).dir);
-    }
+    query.push('--sass-dir', sassDir);
 
     query.push('--fonts-dir', (0, _config.property)('fontsDir'));
 
@@ -140,8 +141,8 @@ function transformSource(filePath, callback) {
             return callback(_arguments);
         }
 
-        cache.push(filePath);
+        cache.set(filePath, _path2.default.join((0, _config.property)('project'), (0, _config.property)('cssDir'), _path2.default.relative(sassDir, filePath)));
 
-        _fs2.default.readFile(filePath, callback);
+        _fs2.default.readFile(cache.get(filePath), callback);
     });
 }
