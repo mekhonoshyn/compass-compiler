@@ -15,7 +15,6 @@ function transformSource(filePath, callback) {
     }
 
     const query = [];
-    const child = spawn(executable, query, {cwd: configProperty('project')});
 
     query.push(configProperty('task'));
     query.push(configProperty('project'));
@@ -92,6 +91,8 @@ function transformSource(filePath, callback) {
     if (configProperty('verbose')) {
         console.info('Running command:', executable, query.join(' '));
     }
+
+    const child = spawn(executable, query, {cwd: configProperty('project')});
 
     if (configProperty('verbose')) {
         child.stdout.setEncoding('utf8');
