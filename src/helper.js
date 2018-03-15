@@ -123,7 +123,10 @@ function transformSource(filePath, callback) {
             return callback(arguments);
         }
 
-        cache.set(filePath, path.join(configProperty('project'), configProperty('cssDir'), path.relative(sassDir, filePath)));
+        const {dir, name} = filePath;
+        const relativeDir = path.relative(sassDir, dir);
+
+        cache.set(filePath, path.join(configProperty('project'), configProperty('cssDir'), relativeDir, `${name}.css`));
 
         fs.readFile(cache.get(filePath), callback);
     });

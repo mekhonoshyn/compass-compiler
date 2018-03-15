@@ -141,7 +141,12 @@ function transformSource(filePath, callback) {
             return callback(_arguments);
         }
 
-        cache.set(filePath, _path2.default.join((0, _config.property)('project'), (0, _config.property)('cssDir'), _path2.default.relative(sassDir, filePath)));
+        var dir = filePath.dir,
+            name = filePath.name;
+
+        var relativeDir = _path2.default.relative(sassDir, dir);
+
+        cache.set(filePath, _path2.default.join((0, _config.property)('project'), (0, _config.property)('cssDir'), relativeDir, name + '.css'));
 
         _fs2.default.readFile(cache.get(filePath), callback);
     });
