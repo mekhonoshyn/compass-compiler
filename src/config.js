@@ -1,6 +1,7 @@
 import del from 'del';
 import path from 'path';
 
+const [PRODUCTION, DEVELOPMENT] = ['production', 'development'];
 const config = {};
 
 export {
@@ -18,13 +19,13 @@ function initialize({
     fntRelPath,
     imgRelPath,
     distRelPath,
-    environment,
-    isDevelopment
+    environment
 }) {
+    const [isProduction, isDevelopment] = [environment === PRODUCTION, environment !== PRODUCTION];
     const options = {
-        environment,
+        environment: isProduction ? PRODUCTION : DEVELOPMENT,
         outputStyle: 'nested',
-        noLineComments: !isDevelopment,
+        noLineComments: isProduction,
         relativeAssets: true,
         cssDir: '.css-temp',
         fontsDir: fntRelPath,

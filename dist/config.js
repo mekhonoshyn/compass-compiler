@@ -17,6 +17,9 @@ var _path2 = _interopRequireDefault(_path);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+var PRODUCTION = 'production',
+    DEVELOPMENT = 'development';
+
 var config = {};
 
 exports.property = property;
@@ -32,13 +35,14 @@ function initialize(_ref) {
     var fntRelPath = _ref.fntRelPath,
         imgRelPath = _ref.imgRelPath,
         distRelPath = _ref.distRelPath,
-        environment = _ref.environment,
-        isDevelopment = _ref.isDevelopment;
+        environment = _ref.environment;
+    var isProduction = environment === PRODUCTION,
+        isDevelopment = environment !== PRODUCTION;
 
     var options = {
-        environment: environment,
+        environment: isProduction ? PRODUCTION : DEVELOPMENT,
         outputStyle: 'nested',
-        noLineComments: !isDevelopment,
+        noLineComments: isProduction,
         relativeAssets: true,
         cssDir: '.css-temp',
         fontsDir: fntRelPath,
