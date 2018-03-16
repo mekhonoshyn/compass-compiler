@@ -70,5 +70,5 @@ function initialize(_ref) {
 }
 
 function finalize() {
-    _del2.default.sync([_path2.default.join(property('project'), property('cssDir')), _path2.default.join(property('project'), '.sass-cache'), _path2.default.join(property('project'), 'manifest.json')]);
+    _del2.default.sync([_path2.default.join(property('project'), property('cssDir')), _path2.default.join(property('project'), '.sass-cache')]);
 }
