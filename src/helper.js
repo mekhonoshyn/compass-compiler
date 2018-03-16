@@ -13,7 +13,7 @@ function transformSource(filePath, callback) {
     try {
         executable = which('compass');
     } catch (error) {
-        return callback(new Error('You need to have Ruby and Compass installed and in your system PATH for this task to work.'));
+        return callback('You need to have Ruby and Compass installed and in your system PATH for this task to work.');
     }
 
     const query = [];
@@ -105,9 +105,7 @@ function transformSource(filePath, callback) {
 
     child.on('close', (code) => {
         if (code) {
-            logger.error(`compilation of "${filePath}" failed. exit code - ${code}`);
-
-            return callback(code);
+            return callback(`compilation of "${filePath}" failed. exit code - ${code}`);
         }
 
         const compiledFilePath = path.join(configProperty('project'), configProperty('cssDir'), `${fileName}.css`);
