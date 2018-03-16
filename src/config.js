@@ -44,7 +44,7 @@ function initialize({
         trace: isDevelopment,
         task: 'compile',
         project: path.join(process.cwd(), distRelPath),
-        moduleName: 'webpack-compass-compiler'
+        moduleName: 'compass-compiler'
     };
 
     Object.entries(options).forEach(([key, value]) => {

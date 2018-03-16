@@ -1,1 +1,1 @@
-# webpack-compass-compiler
+# compass-compiler

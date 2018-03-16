@@ -61,7 +61,7 @@ function initialize(_ref) {
         trace: isDevelopment,
         task: 'compile',
         project: _path2.default.join(process.cwd(), distRelPath),
-        moduleName: 'webpack-compass-compiler'
+        moduleName: 'compass-compiler'
     };
 
     Object.entries(options).forEach(function (_ref2) {

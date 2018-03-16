@@ -1,5 +1,5 @@
 {
-    "name": "webpack-compass-compiler",
+    "name": "compass-compiler",
     "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
@@ -9,14 +9,14 @@
     },
     "repository": {
         "type": "git",
-        "url": "https://github.com/mekhonoshyn/webpack-compass-compiler.git"
+        "url": "https://github.com/mekhonoshyn/compass-compiler.git"
     },
     "author": "mekhonoshyn",
     "license": "MIT",
     "bugs": {
-        "url": "https://github.com/mekhonoshyn/webpack-compass-compiler/issues"
+        "url": "https://github.com/mekhonoshyn/compass-compiler/issues"
     },
-    "homepage": "https://github.com/mekhonoshyn/webpack-compass-compiler",
+    "homepage": "https://github.com/mekhonoshyn/compass-compiler",
     "dependencies": {
         "del": "^3.0.0",
         "which": "^1.3.0"
